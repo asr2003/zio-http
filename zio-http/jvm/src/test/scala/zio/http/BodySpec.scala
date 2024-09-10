@@ -22,7 +22,6 @@ import zio._
 import zio.test.Assertion.equalTo
 import zio.test.TestAspect.timeout
 import zio.test._
-import zio.{Scope, durationInt}
 
 import zio.stream.ZStream
 
