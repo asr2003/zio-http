@@ -315,7 +315,7 @@ object Body {
     form: Form,
   )(implicit trace: Trace): UIO[Body] =
     form.multipartBytesUUID.map { case (boundary, bytes) =>
-      val validBoundary = boundary.replaceAll("[^a-zA-Z0-9'()+_,-./:=?]", "-")
+      val validBoundary = Boundary(boundary.toString.replaceAll("[^a-zA-Z0-9'()+_,-./:=?]", "-"))
       StreamBody(
         bytes,
         knownContentLength = None,
