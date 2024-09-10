@@ -71,7 +71,7 @@ object BodySpec extends ZIOHttpSpec {
             boundaryOpt = body.contentType.flatMap(_.boundary)
             _ <- ZIO.logInfo(s"Generated boundary: ${boundaryOpt.getOrElse("No boundary found")}")
           } yield assertTrue(boundaryOpt.isDefined) &&
-            assertTrue(boundaryOpt.get.matches("^[a-zA-Z0-9'()+_,-./:=?]+$"))
+            assertTrue(boundaryOpt.get.toString.matches("^[a-zA-Z0-9'()+_,-./:=?]+$"))
         },
       ),
     ) @@ timeout(10 seconds)
