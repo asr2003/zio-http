@@ -17,6 +17,7 @@
 package zio.http
 
 import java.io.File
+import zio._
 
 import zio.test.Assertion.equalTo
 import zio.test.TestAspect.timeout
