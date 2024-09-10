@@ -62,5 +62,17 @@ object BodySpec extends ZIOHttpSpec {
           assertTrue(body.mediaType == Option(MediaType.text.plain))
         },
       ),
+      suite("multipart form boundary")(
+        test("generated boundary is RFC 2046 compliant") {
+          for {
+            form <- ZIO.succeed(Form(FormField.simpleField("name", "test-name")))
+            body <- Body.fromMultipartFormUUID(form)
+            boundaryOpt = body.contentType.flatMap(_.boundary)
+            _ <- zio.logInfo(s"Generated boundary: ${boundaryOpt.getOrElse("No boundary found")}")
+
+          } yield assertTrue(boundaryOpt.isDefined) &&
+            assertTrue(boundaryOpt.get.matches("^[a-zA-Z0-9'()+_,-./:=?]+$"))
+        },
+      ),
     ) @@ timeout(10 seconds)
 }
