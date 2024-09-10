@@ -69,8 +69,7 @@ object BodySpec extends ZIOHttpSpec {
             form <- ZIO.succeed(Form(FormField.simpleField("name", "test-name")))
             body <- Body.fromMultipartFormUUID(form)
             boundaryOpt = body.contentType.flatMap(_.boundary)
-            _ <- zio.logInfo(s"Generated boundary: ${boundaryOpt.getOrElse("No boundary found")}")
-
+            _ <- ZIO.logInfo(s"Generated boundary: ${boundaryOpt.getOrElse("No boundary found")}")
           } yield assertTrue(boundaryOpt.isDefined) &&
             assertTrue(boundaryOpt.get.matches("^[a-zA-Z0-9'()+_,-./:=?]+$"))
         },
