@@ -24,9 +24,9 @@ import zio._
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 
 import io.netty.channel._
-import io.netty.channel.epoll.{Epoll, EpollEventLoopGroup}
-import io.netty.channel.kqueue.{KQueue, KQueueEventLoopGroup}
-import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.epoll.{Epoll, EpollHandler}
+import io.netty.channel.kqueue.{KQueue, KQueueHandler}
+import io.netty.channel.nio.NioHandler
 import io.netty.incubator.channel.uring.IOUringEventLoopGroup
 
 /**
@@ -42,10 +42,10 @@ object EventLoopGroups {
   }
 
   def nio(config: Config)(implicit trace: Trace): ZIO[Scope, Nothing, EventLoopGroup] =
-    make(config: Config, ZIO.succeed(new NioEventLoopGroup(config.nThreads)))
+    make(config, ZIO.succeed(MultithreadEventLoopGroup.newInstance(config.nThreads, NioHandler.newFactory())))
 
   def nio(config: Config, executor: Executor)(implicit trace: Trace): ZIO[Scope, Nothing, EventLoopGroup] =
-    make(config, ZIO.succeed(new NioEventLoopGroup(config.nThreads, executor)))
+    make(config, ZIO.succeed(MultithreadEventLoopGroup.newInstance(config.nThreads, executor, NioHandler.newFactory())))
 
   def make(config: Config, eventLoopGroup: UIO[EventLoopGroup])(implicit
     trace: Trace,
@@ -58,13 +58,16 @@ object EventLoopGroups {
     }
 
   def epoll(config: Config)(implicit trace: Trace): ZIO[Scope, Nothing, EventLoopGroup] =
-    make(config, ZIO.succeed(new EpollEventLoopGroup(config.nThreads)))
+    make(config, ZIO.succeed(MultithreadEventLoopGroup.newInstance(config.nThreads, EpollHandler.newFactory())))
 
   def kqueue(config: Config)(implicit trace: Trace): ZIO[Scope, Nothing, EventLoopGroup] =
-    make(config, ZIO.succeed(new KQueueEventLoopGroup(config.nThreads)))
+    make(config, ZIO.succeed(MultithreadEventLoopGroup.newInstance(config.nThreads, KQueueHandler.newFactory())))
 
   def epoll(config: Config, executor: Executor)(implicit trace: Trace): ZIO[Scope, Nothing, EventLoopGroup] =
-    make(config, ZIO.succeed(new EpollEventLoopGroup(config.nThreads, executor)))
+    make(
+      config,
+      ZIO.succeed(MultithreadEventLoopGroup.newInstance(config.nThreads, executor, EpollHandler.newFactory())),
+    )
 
   /**
    * Creates a new instance of `IOUringEventLoopGroup` with the given
@@ -97,7 +100,7 @@ object EventLoopGroups {
 
   def default(config: Config)(implicit trace: Trace): ZIO[Scope, Nothing, EventLoopGroup] = make(
     config,
-    ZIO.succeed(new DefaultEventLoopGroup()),
+    ZIO.succeed(MultithreadEventLoopGroup.newInstance(1, NioHandler.newFactory())),
   )
 
   implicit val trace: Trace = Trace.empty
