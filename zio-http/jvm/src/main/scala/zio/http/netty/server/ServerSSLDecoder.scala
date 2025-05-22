@@ -19,6 +19,7 @@ package zio.http.netty.server
 import java.io.{FileInputStream, InputStream}
 import java.security.KeyStore
 import java.util
+import java.time.{Duration, Instant}
 import javax.net.ssl.{KeyManagerFactory, TrustManagerFactory}
 
 import scala.util.Using
@@ -38,7 +39,7 @@ import io.netty.handler.ssl.ApplicationProtocolConfig.{
   SelectorFailureBehavior,
 }
 import io.netty.handler.ssl._
-import io.netty.pkitesting.CertificateBuilder
+import io.netty.pkitesting.{CertificateBuilder, KeyUsage, ExtendedKeyUsage}
 import io.netty.handler.ssl.{ClientAuth => NettyClientAuth}
 private[netty] object SSLUtil {
 
@@ -121,7 +122,15 @@ private[netty] object SSLUtil {
 
   def sslConfigToSslContext(sslConfig: SSLConfig): SslContext = sslConfig.data match {
     case SSLConfig.Data.Generate =>
-      val selfSignedBundle = CertificateBuilder.selfSigned().build()
+      val now              = Instant.now()
+      val selfSignedBundle = new CertificateBuilder()
+        .notBefore(now.minus(Duration.ofDays(1)))
+        .notAfter(now.plus(Duration.ofDays(1)))
+        .subject("CN=zio-http")
+        .setKeyUsage(true, KeyUsage.digitalSignature, KeyUsage.keyCertSign)
+        .setIsCertificateAuthority(true)
+        .buildSelfSigned()
+
       SslContextBuilder
         .forServer(selfSignedBundle.privateKey(), selfSignedBundle.certificate())
         .buildWithDefaultOptions(sslConfig)
