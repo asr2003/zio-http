@@ -38,7 +38,7 @@ import io.netty.handler.ssl.ApplicationProtocolConfig.{
   SelectorFailureBehavior,
 }
 import io.netty.handler.ssl._
-import io.netty.handler.ssl.util.SelfSignedCertificate
+import io.netty.handler.ssl.util.CertificateBuilder
 import io.netty.handler.ssl.{ClientAuth => NettyClientAuth}
 private[netty] object SSLUtil {
 
@@ -121,9 +121,9 @@ private[netty] object SSLUtil {
 
   def sslConfigToSslContext(sslConfig: SSLConfig): SslContext = sslConfig.data match {
     case SSLConfig.Data.Generate =>
-      val selfSigned = new SelfSignedCertificate()
+      val selfSignedBundle = CertificateBuilder.selfSigned().build()
       SslContextBuilder
-        .forServer(selfSigned.key, selfSigned.cert)
+        .forServer(selfSignedBundle.privateKey(), selfSignedBundle.certificate())
         .buildWithDefaultOptions(sslConfig)
 
     case SSLConfig.Data.FromFile(certPath, keyPath, trustCertCollectionPath) =>
