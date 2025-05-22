@@ -36,8 +36,8 @@ object Dependencies {
   val `netty-incubator` =
     "io.netty.incubator" % "netty-incubator-transport-native-io_uring" % NettyIncubatorVersion % "provided" classifier "linux-x86_64"
 
-  val `netty-pki-testing` =
-    "io.netty" % "netty-pki-testing" % NettyPkiTestingVersion
+  val `netty-pkitesting` =
+    "io.netty" % "netty-pkitesting" % NettyPkiTestingVersion
 
   val zio                   = "dev.zio" %% "zio"                 % ZioVersion
   val `zio-cli`             = "dev.zio" %% "zio-cli"             % ZioCliVersion
