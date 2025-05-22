@@ -20,6 +20,7 @@ import java.io.{FileInputStream, InputStream}
 import java.security.KeyStore
 import java.util
 import java.time.{Duration, Instant}
+import java.time.temporal.ChronoUnit
 import javax.net.ssl.{KeyManagerFactory, TrustManagerFactory}
 
 import scala.util.Using
@@ -39,7 +40,7 @@ import io.netty.handler.ssl.ApplicationProtocolConfig.{
   SelectorFailureBehavior,
 }
 import io.netty.handler.ssl._
-import io.netty.pkitesting.{CertificateBuilder, KeyUsage, ExtendedKeyUsage}
+import io.netty.pkitesting.{CertificateBuilder, CertificateBuilder.KeyUsage, CertificateBuilder.ExtendedKeyUsage}
 import io.netty.handler.ssl.{ClientAuth => NettyClientAuth}
 private[netty] object SSLUtil {
 
@@ -124,13 +125,14 @@ private[netty] object SSLUtil {
     case SSLConfig.Data.Generate =>
       val now              = Instant.now()
       val selfSignedBundle = new CertificateBuilder()
-        .notBefore(now.minus(Duration.ofDays(1)))
-        .notAfter(now.plus(Duration.ofDays(1)))
+        .notBefore(now.minus(1, ChronoUnit.DAYS))
+        .notAfter(now.plus(1, ChronoUnit.DAYS))
         .subject("CN=zio-http")
         .setKeyUsage(true, KeyUsage.digitalSignature, KeyUsage.keyCertSign)
         .setIsCertificateAuthority(true)
+        .setKeyUsage(true, KeyUsage.digitalSignature, KeyUsage.keyCertSign)
+        .addExtendedKeyUsage(ExtendedKeyUsage.PKIX_KP_SERVER_AUTH)
         .buildSelfSigned()
-
       SslContextBuilder
         .forServer(selfSignedBundle.privateKey(), selfSignedBundle.certificate())
         .buildWithDefaultOptions(sslConfig)
