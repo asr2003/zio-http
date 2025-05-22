@@ -4,6 +4,7 @@ object Dependencies {
   val JwtCoreVersion               = "10.0.4"
   val NettyVersion                 = "4.2.0.Final"
   val NettyIncubatorVersion        = "0.0.26.Final"
+  val NettyPkiTestingVersion       = "4.2.0.Final"
   val ScalaCompatCollectionVersion = "2.13.0"
   val ZioVersion                   = "2.1.17"
   val ZioCliVersion                = "0.7.2"
@@ -34,6 +35,9 @@ object Dependencies {
 
   val `netty-incubator` =
     "io.netty.incubator" % "netty-incubator-transport-native-io_uring" % NettyIncubatorVersion % "provided" classifier "linux-x86_64"
+
+  val `netty-pki-testing` =
+    "io.netty" % "netty-pki-testing" % NettyPkiTestingVersion
 
   val zio                   = "dev.zio" %% "zio"                 % ZioVersion
   val `zio-cli`             = "dev.zio" %% "zio-cli"             % ZioCliVersion
