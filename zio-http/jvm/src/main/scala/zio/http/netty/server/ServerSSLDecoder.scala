@@ -40,7 +40,7 @@ import io.netty.handler.ssl.ApplicationProtocolConfig.{
   SelectorFailureBehavior,
 }
 import io.netty.handler.ssl._
-import io.netty.pkitesting.{CertificateBuilder, CertificateBuilder.KeyUsage, CertificateBuilder.ExtendedKeyUsage}
+import io.netty.pkitesting.CertificateBuilder
 import io.netty.handler.ssl.{ClientAuth => NettyClientAuth}
 private[netty] object SSLUtil {
 
@@ -128,10 +128,9 @@ private[netty] object SSLUtil {
         .notBefore(now.minus(1, ChronoUnit.DAYS))
         .notAfter(now.plus(1, ChronoUnit.DAYS))
         .subject("CN=zio-http")
-        .setKeyUsage(true, KeyUsage.digitalSignature, KeyUsage.keyCertSign)
         .setIsCertificateAuthority(true)
-        .setKeyUsage(true, KeyUsage.digitalSignature, KeyUsage.keyCertSign)
-        .addExtendedKeyUsage(ExtendedKeyUsage.PKIX_KP_SERVER_AUTH)
+        .setKeyUsage(true, CertificateBuilder.KeyUsage.digitalSignature, CertificateBuilder.KeyUsage.keyCertSign)
+        .addExtendedKeyUsage(CertificateBuilder.ExtendedKeyUsage.PKIX_KP_SERVER_AUTH)
         .buildSelfSigned()
       SslContextBuilder
         .forServer(selfSignedBundle.privateKey(), selfSignedBundle.certificate())
