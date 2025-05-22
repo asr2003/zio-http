@@ -132,8 +132,12 @@ private[netty] object SSLUtil {
         .setKeyUsage(true, CertificateBuilder.KeyUsage.digitalSignature, CertificateBuilder.KeyUsage.keyCertSign)
         .addExtendedKeyUsage(CertificateBuilder.ExtendedKeyUsage.PKIX_KP_SERVER_AUTH)
         .buildSelfSigned()
+
+      val keyPair = selfSignedBundle.getKeyPair()
+      val cert    = selfSignedBundle.getCertificate()
+
       SslContextBuilder
-        .forServer(selfSignedBundle.privateKey(), selfSignedBundle.certificate())
+        .forServer(keyPair.getPrivate, cert)
         .buildWithDefaultOptions(sslConfig)
 
     case SSLConfig.Data.FromFile(certPath, keyPath, trustCertCollectionPath) =>
