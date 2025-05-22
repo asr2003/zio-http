@@ -38,7 +38,7 @@ import io.netty.handler.ssl.ApplicationProtocolConfig.{
   SelectorFailureBehavior,
 }
 import io.netty.handler.ssl._
-import io.netty.handler.ssl.pkitesting.CertificateBuilder
+import io.netty.pkitesting.CertificateBuilder
 import io.netty.handler.ssl.{ClientAuth => NettyClientAuth}
 private[netty] object SSLUtil {
 
